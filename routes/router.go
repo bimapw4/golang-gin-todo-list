@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"golang-gin-todo-list/app/controller"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -12,4 +13,8 @@ func Router(r *gin.Engine) {
 			"message": "Hello World",
 		})
 	})
+
+	ag := r.Group("activity-groups")
+	ag.POST("/", controller.CreateActivity)
+	ag.GET("/", controller.GetAllActivity)
 }
