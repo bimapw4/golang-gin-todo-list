@@ -1,6 +1,7 @@
 package main
 
 import (
+	"golang-gin-todo-list/app/model"
 	"golang-gin-todo-list/config"
 	"golang-gin-todo-list/routes"
 	"log"
@@ -16,6 +17,10 @@ func main() {
 	}
 
 	config.Connect()
+	config.Migrate(
+		&model.Activity{},
+		&model.Todo{},
+	)
 
 	router := gin.Default()
 
