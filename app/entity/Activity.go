@@ -9,6 +9,10 @@ type Activity struct {
 	Title string `json:"title"`
 }
 
+type UpdateActivity struct {
+	Title string `json:"title" validate:"required"`
+}
+
 type GetActivityResponse struct {
 	Id        int       `json:"id"`
 	Email     string    `json:"email"`

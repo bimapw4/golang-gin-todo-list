@@ -17,4 +17,7 @@ func Router(r *gin.Engine) {
 	ag := r.Group("activity-groups")
 	ag.POST("/", controller.CreateActivity)
 	ag.GET("/", controller.GetAllActivity)
+	ag.GET("/:id", controller.GetOneActivity)
+	ag.DELETE("/:id", controller.DeleteActivity)
+	ag.PATCH("/:id", controller.UpdateActivity)
 }
