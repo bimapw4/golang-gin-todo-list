@@ -20,4 +20,12 @@ func Router(r *gin.Engine) {
 	ag.GET("/:id", controller.GetOneActivity)
 	ag.DELETE("/:id", controller.DeleteActivity)
 	ag.PATCH("/:id", controller.UpdateActivity)
+
+	td := r.Group("todo-items")
+	td.POST("/", controller.CreateTodo)
+	td.GET("/", controller.GetAllTodo)
+	td.GET("/:id", controller.GetOneTodo)
+	td.PATCH("/:id", controller.UpdateTodo)
+	td.DELETE("/:id", controller.DeleteTodo)
+
 }
