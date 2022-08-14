@@ -5,8 +5,8 @@ import (
 )
 
 type Activity struct {
-	Email string `json:"email"`
-	Title string `json:"title"`
+	Email string `json:"email" validate:"required"`
+	Title string `json:"title" validate:"required"`
 }
 
 type UpdateActivity struct {

@@ -7,11 +7,25 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 func CreateTodo(ctx *gin.Context) {
 	var Todo model.Todo
 	ctx.BindJSON(&Todo)
+
+	err := validator.New().Struct(Todo)
+
+	if err != nil {
+		for _, v := range err.(validator.ValidationErrors) {
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+				"status":  "bad request",
+				"message": v.Field() + " cannot be null",
+				"data":    gin.H{},
+			})
+			return
+		}
+	}
 
 	Todo.Priority = "very-high"
 	config.DB.Create(&Todo)
@@ -43,7 +57,17 @@ func GetAllTodo(ctx *gin.Context) {
 
 func GetOneTodo(ctx *gin.Context) {
 	var Todo model.Todo
-	config.DB.Model(&Todo).Where("id = ?", ctx.Param("id")).First(&Todo)
+
+	result := config.DB.Model(&Todo).Where("id = ?", ctx.Param("id")).First(&Todo)
+
+	if result.RowsAffected <= 0 {
+		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{
+			"status":  "Not Found",
+			"message": "Todo with ID " + ctx.Param("id") + " Not Found",
+			"data":    gin.H{},
+		})
+		return
+	}
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"status":  "Success",
@@ -57,7 +81,30 @@ func UpdateTodo(ctx *gin.Context) {
 	var req entity.UpdateTodo
 
 	ctx.BindJSON(&req)
-	config.DB.Model(&Todo).Where("id = ?", ctx.Param("id")).First(&Todo)
+
+	err := validator.New().Struct(req)
+
+	if err != nil {
+		for _, v := range err.(validator.ValidationErrors) {
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+				"status":  "bad request",
+				"message": v.Field() + " cannot be null",
+				"data":    gin.H{},
+			})
+			return
+		}
+	}
+
+	result := config.DB.Model(&Todo).Where("id = ?", ctx.Param("id")).First(&Todo)
+
+	if result.RowsAffected <= 0 {
+		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{
+			"status":  "Not Found",
+			"message": "Todo with ID " + ctx.Param("id") + " Not Found",
+			"data":    gin.H{},
+		})
+		return
+	}
 
 	Todo.Title = req.Title
 
@@ -72,7 +119,16 @@ func UpdateTodo(ctx *gin.Context) {
 
 func DeleteTodo(ctx *gin.Context) {
 	var Todo model.Todo
-	config.DB.Where("id = ?", ctx.Param("id")).Delete(&Todo)
+	result := config.DB.Where("id = ?", ctx.Param("id")).Delete(&Todo)
+
+	if result.RowsAffected <= 0 {
+		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{
+			"status":  "Not Found",
+			"message": "Todo with ID " + ctx.Param("id") + " Not Found",
+			"data":    gin.H{},
+		})
+		return
+	}
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"status":  "Success",
