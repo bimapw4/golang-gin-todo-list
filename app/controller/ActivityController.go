@@ -12,10 +12,9 @@ import (
 
 func CreateActivity(ctx *gin.Context) {
 	var activity model.Activity
-	var req entity.Activity
-	ctx.BindJSON(&req)
+	ctx.BindJSON(&activity)
 
-	err := validator.New().Struct(req)
+	err := validator.New().Struct(activity)
 
 	if err != nil {
 		for _, v := range err.(validator.ValidationErrors) {
@@ -27,7 +26,7 @@ func CreateActivity(ctx *gin.Context) {
 			return
 		}
 	}
-	config.DB.Model(&activity).Create(&req)
+	config.DB.Create(&activity)
 
 	ctx.JSON(http.StatusCreated, gin.H{
 		"status":  "Success",
