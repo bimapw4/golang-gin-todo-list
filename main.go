@@ -26,5 +26,5 @@ func main() {
 
 	routes.Router(router)
 
-	router.Run()
+	router.Run(":3030")
 }
